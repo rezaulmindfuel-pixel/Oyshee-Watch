@@ -53,8 +53,20 @@ const upload = multer({
   },
 });
 
+// Determine static files directory (fallback to root if uploaded without 'public' subfolder on GitHub)
+const hasPublicFolder = fs.existsSync(path.join(__dirname, "public", "index.html"));
+const publicPath = hasPublicFolder ? path.join(__dirname, "public") : __dirname;
+
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+
+if (hasPublicFolder) {
+  app.use(express.static(publicPath));
+} else {
+  // Serve only the index page at root to avoid exposing server code
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(publicPath, "index.html"));
+  });
+}
 
 // ---- Upload endpoint ----
 app.post("/api/upload", (req, res) => {
@@ -136,7 +148,7 @@ app.get("/stream/:id", (req, res) => {
 // ---- Watch page (shareable link) ----
 app.get("/watch/:id", (req, res) => {
   res.sendFile && null; // noop
-  res.sendFile(path.join(__dirname, "public", "watch.html"));
+  res.sendFile(path.join(publicPath, "watch.html"));
 });
 
 app.listen(PORT, () => {
