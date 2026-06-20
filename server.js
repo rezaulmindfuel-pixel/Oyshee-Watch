@@ -153,4 +153,15 @@ app.get("/watch/:id", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  try {
+    console.log("Root directory files:", fs.readdirSync(__dirname));
+    const publicDir = path.join(__dirname, "public");
+    if (fs.existsSync(publicDir)) {
+      console.log("Public directory files:", fs.readdirSync(publicDir));
+    } else {
+      console.log("Public folder does not exist in root.");
+    }
+  } catch (err) {
+    console.log("Failed to read directory contents:", err.message);
+  }
 });
