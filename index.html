@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oyshee Watch — Stream & Share Videos Instantly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #080710;
+    --bg-gradient: radial-gradient(circle at 50% 0%, #1a153b 0%, #080710 100%);
+    --card-bg: rgba(20, 16, 43, 0.45);
+    --card-bg-hover: rgba(28, 23, 59, 0.6);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-active: rgba(139, 92, 246, 0.5);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent-primary: #8b5cf6;
+    --accent-secondary: #6366f1;
+    --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --accent-glow: rgba(139, 92, 246, 0.35);
+    --success: #10b981;
+    --error: #ef4444;
+    --error-bg: rgba(239, 68, 68, 0.08);
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg-dark);
+    background-image: var(--bg-gradient);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- Header ---- */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 56px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 40%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo span {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    color: #8b5cf6;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+  }
+
+  .tagline {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border-color);
+  }
+
+  /* ---- Hero Section ---- */
+  .hero {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  h1 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    font-style: normal;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lede {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* ---- Main Upload Card ---- */
+  .reel-card {
+    position: relative;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-bottom: 64px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.03);
+    transition: var(--transition);
+  }
+
+  .reel-card:hover {
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 0 50px rgba(139, 92, 246, 0.06);
+  }
+
+  .field-group {
+    margin-bottom: 28px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    opacity: 0.8;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .input-text {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 14px 16px;
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .input-text:focus {
+    border-color: var(--accent-primary);
+    background: rgba(139, 92, 246, 0.05);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  .input-text::placeholder {
+    color: #4b5563;
+  }
+
+  /* ---- Dropzone ---- */
+  .dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 44px 24px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.01);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dropzone:hover, .dropzone.drag {
+    border-color: var(--accent-primary);
+    background: rgba(139, 92, 246, 0.04);
+    box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
+  }
+
+  .dropzone:hover .upload-icon-svg {
+    transform: translateY(-4px);
+    color: #a855f7;
+  }
+
+  .dropzone input {
+    display: none;
+  }
+
+  .upload-icon-svg {
+    width: 48px;
+    height: 48px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    transition: var(--transition);
+  }
+
+  .dz-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .dz-sub {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .dz-file {
+    font-size: 13px;
+    font-weight: 600;
+    color: #a855f7;
+    margin-top: 14px;
+    word-break: break-all;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 6px 12px;
+    border-radius: 100px;
+    display: inline-block;
+  }
+
+  /* ---- Button ---- */
+  button.cast {
+    width: 100%;
+    margin-top: 28px;
+    background: var(--accent-gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    transition: var(--transition);
+  }
+
+  button.cast:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+    filter: brightness(1.05);
+  }
+
+  button.cast:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  button.cast:disabled {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    cursor: not-allowed;
+    border: 1px solid var(--border-color);
+  }
+
+  /* ---- Progress Row ---- */
+  .progress-row {
+    display: none;
+    margin-top: 24px;
+  }
+
+  #progressLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: var(--accent-gradient);
+    border-radius: 100px;
+    transition: width 0.15s;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+
+  /* ---- Results Box ---- */
+  .result {
+    display: none;
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-color);
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .link-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .link-row input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 14px;
+    outline: none;
+    text-overflow: ellipsis;
+  }
+
+  .copy-btn, .watch-btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: 13px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+
+  .copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .copy-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-dark);
+    border-color: var(--text-primary);
+  }
+
+  .watch-btn {
+    background: var(--accent-gradient);
+    border: none;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+  }
+
+  .watch-btn:hover {
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.35);
+    filter: brightness(1.1);
+  }
+
+  /* ---- Error Box ---- */
+  .error-box {
+    display: none;
+    margin-top: 24px;
+    border-left: 3px solid var(--error);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fca5a5;
+    background: var(--error-bg);
+  }
+
+  /* ---- Gallery ---- */
+  .gallery-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .gallery-head h2 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+
+  .count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  #gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .item:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-active);
+    background: var(--card-bg-hover);
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.15);
+  }
+
+  .item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .item:hover::before {
+    opacity: 1;
+  }
+
+  .item-num {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 3px 8px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .item-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 44px;
+  }
+
+  .item-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 14px;
+    margin-top: auto;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 32px; }
+    .wrap { padding: 32px 16px 60px; }
+    .reel-card { padding: 24px; }
+    .link-row { flex-direction: column; align-items: stretch; }
+    .copy-btn, .watch-btn { width: 100%; text-align: center; }
+    #gallery { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      Oyshee <span>Watch</span>
+    </div>
+    <div class="tagline">stream and share instantly</div>
+  </header>
+
+  <div class="hero">
+    <h1>Drop in a video.<br/>Get a <em>watch link</em>.</h1>
+    <p class="lede">No accounts, no downloads. Pick a video file, name it, and get a premium streaming link that plays natively in any browser.</p>
+  </div>
+
+  <div class="reel-card">
+    <div class="field-group">
+      <label class="field-label">Video Title</label>
+      <input type="text" class="input-text" id="titleInput" placeholder="Give your video a name" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">File upload</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska" />
+        <svg class="upload-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div class="dz-title" id="dzTitle">Click to choose, or drag a video here</div>
+        <div class="dz-sub">Supports MP4, WebM, OGG, MOV, MKV — up to 10GB</div>
+        <div class="dz-file" id="dzFile" style="display: none;"></div>
+      </div>
+    </div>
+
+    <button class="cast" id="uploadBtn" disabled>Upload &amp; Create Link</button>
+
+    <div class="progress-row" id="progressRow">
+      <div id="progressLabel">
+        <span>Uploading file…</span>
+        <span id="pctLabel">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="result" id="resultBox">
+      <div class="result-label">Your premium watch link</div>
+      <div class="link-row">
+        <input type="text" id="resultLink" readonly />
+        <button class="copy-btn" id="copyBtn">Copy</button>
+        <button class="watch-btn" id="watchBtn">Watch</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-head">
+    <h2>Streaming Gallery</h2>
+    <span class="count" id="galleryCount">0 videos</span>
+  </div>
+  <div id="gallery"></div>
+
+</div>
+
+<script>
+  const fileInput = document.getElementById("fileInput");
+  const dropzone = document.getElementById("dropzone");
+  const dzTitle = document.getElementById("dzTitle");
+  const dzFile = document.getElementById("dzFile");
+  const titleInput = document.getElementById("titleInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const progressRow = document.getElementById("progressRow");
+  const progressFill = document.getElementById("progressFill");
+  const pctLabel = document.getElementById("pctLabel");
+  const errorBox = document.getElementById("errorBox");
+  const resultBox = document.getElementById("resultBox");
+  const resultLink = document.getElementById("resultLink");
+  const copyBtn = document.getElementById("copyBtn");
+  const watchBtn = document.getElementById("watchBtn");
+  const gallery = document.getElementById("gallery");
+  const galleryCount = document.getElementById("galleryCount");
+
+  let selectedFile = null;
+
+  dropzone.addEventListener("click", () => fileInput.click());
+  ["dragenter", "dragover"].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add("drag"); })
+  );
+  ["dragleave", "drop"].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove("drag"); })
+  );
+  dropzone.addEventListener("drop", e => {
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFile(e.dataTransfer.files[0]);
+    }
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  function handleFile(file) {
+    selectedFile = file;
+    dzTitle.style.display = "none";
+    dzFile.style.display = "inline-block";
+    dzFile.textContent = `${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)`;
+    if (!titleInput.value) {
+      titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+    }
+    uploadBtn.disabled = false;
+  }
+
+  uploadBtn.addEventListener("click", () => {
+    if (!selectedFile) return;
+    errorBox.style.display = "none";
+    resultBox.style.display = "none";
+    uploadBtn.disabled = true;
+    progressRow.style.display = "block";
+    progressFill.style.width = "0%";
+    pctLabel.textContent = "0%";
+
+    const formData = new FormData();
+    formData.append("video", selectedFile);
+    formData.append("title", titleInput.value || selectedFile.name);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+
+    xhr.upload.addEventListener("progress", e => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        progressFill.style.width = pct + "%";
+        pctLabel.textContent = pct + "%";
+      }
+    });
+
+    xhr.onload = () => {
+      uploadBtn.disabled = false;
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && data.success) {
+          pctLabel.textContent = "100%";
+          const fullUrl = window.location.origin + data.watchUrl;
+          resultLink.value = fullUrl;
+          resultBox.style.display = "block";
+          watchBtn.onclick = () => window.open(data.watchUrl, "_blank");
+          loadGallery();
+        } else {
+          showError(data.error || "Upload failed.");
+        }
+      } catch (err) {
+        showError("Unexpected server response.");
+      }
+    };
+
+    xhr.onerror = () => {
+      uploadBtn.disabled = false;
+      showError("Network error during upload.");
+    };
+
+    xhr.send(formData);
+  });
+
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(resultLink.value).then(() => {
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+    });
+  });
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+    progressRow.style.display = "none";
+  }
+
+  function formatSize(bytes) {
+    const mb = bytes / (1024 * 1024);
+    if (mb < 1024) return mb.toFixed(1) + " MB";
+    return (mb / 1024).toFixed(2) + " GB";
+  }
+
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return "just now";
+    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    return Math.floor(diff / 86400) + "d ago";
+  }
+
+  async function loadGallery() {
+    try {
+      const res = await fetch("/api/videos");
+      const videos = await res.json();
+      galleryCount.textContent = videos.length ? `${videos.length} video${videos.length > 1 ? "s" : ""}` : "0 videos";
+      if (!videos.length) {
+        gallery.innerHTML = '<div class="empty">Nothing uploaded yet. Your uploads will show up here!</div>';
+        return;
+      }
+      gallery.innerHTML = videos.map((v, i) => `
+        <a class="item" href="/watch/${v.id}">
+          <span class="item-num">${String(i + 1).padStart(2, "0")}</span>
+          <span class="item-title">${escapeHtml(v.title)}</span>
+          <span class="item-meta">
+            <span>${formatSize(v.size)}</span>
+            <span>${timeAgo(v.uploadedAt)}</span>
+          </span>
+        </a>
+      `).join("");
+    } catch (e) {
+      gallery.innerHTML = '<div class="empty">Could not load the gallery.</div>';
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  loadGallery();
+</script>
+</body>
+</html>
