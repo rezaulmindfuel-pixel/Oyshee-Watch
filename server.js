@@ -68,6 +68,11 @@ if (hasPublicFolder) {
   });
 }
 
+// ---- Manage page route ----
+app.get("/manage", (req, res) => {
+  res.sendFile(path.join(publicPath, "manage.html"));
+});
+
 // ---- Upload endpoint ----
 app.post("/api/upload", (req, res) => {
   upload.single("video")(req, res, (err) => {
@@ -107,6 +112,31 @@ app.get("/api/videos/:id", (req, res) => {
   const video = readVideos().find((v) => v.id === req.params.id);
   if (!video) return res.status(404).json({ error: "Video not found." });
   res.json(video);
+});
+
+// ---- Delete a video ----
+app.delete("/api/videos/:id", (req, res) => {
+  const videos = readVideos();
+  const index = videos.findIndex((v) => v.id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Video not found." });
+
+  const video = videos[index];
+  const filePath = path.join(UPLOAD_DIR, video.filename);
+
+  // Remove from list
+  videos.splice(index, 1);
+  writeVideos(videos);
+
+  // Delete file from disk
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (err) {
+    console.error("Failed to delete file:", err.message);
+  }
+
+  res.json({ success: true, message: "Video deleted." });
 });
 
 // ---- Stream video with HTTP Range support (critical for playback/seeking) ----

@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Upload & Manage — Oyshee Watch</title>
+<meta name="description" content="Upload new videos and manage your video library. Delete unwanted uploads from your collection." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0a0a0a;
+    --bg-gradient: radial-gradient(ellipse at 50% 0%, #1a0a12 0%, #0a0a0a 70%);
+    --card-bg: rgba(20, 10, 16, 0.5);
+    --card-bg-hover: rgba(35, 15, 25, 0.65);
+    --border-color: rgba(255, 255, 255, 0.07);
+    --border-active: rgba(255, 20, 147, 0.5);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent-primary: #ff1493;
+    --accent-secondary: #ff69b4;
+    --accent-gradient: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ff1493 100%);
+    --accent-glow: rgba(255, 20, 147, 0.35);
+    --success: #10b981;
+    --error: #ef4444;
+    --error-bg: rgba(239, 68, 68, 0.08);
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg-dark);
+    background-image: var(--bg-gradient);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background orbs */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(120px);
+  }
+  body::before {
+    width: 450px;
+    height: 450px;
+    background: rgba(255, 20, 147, 0.07);
+    top: -120px;
+    left: -80px;
+    animation: orbFloat 14s ease-in-out infinite alternate;
+  }
+  body::after {
+    width: 350px;
+    height: 350px;
+    background: rgba(255, 105, 180, 0.05);
+    bottom: -80px;
+    right: -60px;
+    animation: orbFloat 17s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes orbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(30px, -25px) scale(1.12); }
+  }
+
+  .wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---- Header ---- */
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff 40%, #ffd6e7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo span {
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-icon {
+    width: 30px;
+    height: 30px;
+    color: #ff1493;
+    filter: drop-shadow(0 0 10px rgba(255, 20, 147, 0.6));
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+  }
+
+  .back-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 20, 147, 0.3);
+    background: rgba(255, 20, 147, 0.08);
+  }
+
+  /* ---- Page Title ---- */
+  .page-title {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .page-title h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+  }
+
+  .page-title h1 em {
+    font-style: normal;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-title p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ---- Upload Card ---- */
+  .upload-card {
+    position: relative;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-bottom: 56px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(255, 20, 147, 0.03);
+    transition: var(--transition);
+  }
+
+  .upload-card:hover {
+    border-color: rgba(255, 20, 147, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 0 60px rgba(255, 20, 147, 0.06);
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--accent-gradient);
+    border-radius: 100px;
+  }
+
+  .field-group {
+    margin-bottom: 24px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    opacity: 0.8;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .input-text {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 14px 16px;
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .input-text:focus {
+    border-color: var(--accent-primary);
+    background: rgba(255, 20, 147, 0.04);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .input-text::placeholder {
+    color: #4b5563;
+  }
+
+  /* ---- Dropzone ---- */
+  .dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.01);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dropzone:hover, .dropzone.drag {
+    border-color: var(--accent-primary);
+    background: rgba(255, 20, 147, 0.03);
+    box-shadow: inset 0 0 30px rgba(255, 20, 147, 0.04);
+  }
+
+  .dropzone:hover .upload-icon-svg {
+    transform: translateY(-6px);
+    color: var(--accent-primary);
+    filter: drop-shadow(0 4px 12px rgba(255, 20, 147, 0.4));
+  }
+
+  .dropzone input {
+    display: none;
+  }
+
+  .upload-icon-svg {
+    width: 52px;
+    height: 52px;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+    transition: var(--transition);
+  }
+
+  .dz-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .dz-sub {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .dz-file {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-top: 14px;
+    word-break: break-all;
+    background: rgba(255, 20, 147, 0.1);
+    padding: 6px 14px;
+    border-radius: 100px;
+    display: inline-block;
+    border: 1px solid rgba(255, 20, 147, 0.15);
+  }
+
+  /* ---- Upload Button ---- */
+  button.cast {
+    width: 100%;
+    margin-top: 24px;
+    background: var(--accent-gradient);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.3);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  button.cast::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  button.cast:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 20, 147, 0.45);
+  }
+
+  button.cast:hover:not(:disabled)::before {
+    opacity: 1;
+  }
+
+  button.cast:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  button.cast:disabled {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    cursor: not-allowed;
+    border: 1px solid var(--border-color);
+  }
+
+  /* ---- Progress Row ---- */
+  .progress-row {
+    display: none;
+    margin-top: 24px;
+  }
+
+  #progressLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0%;
+    background: var(--accent-gradient);
+    border-radius: 100px;
+    transition: width 0.15s;
+    box-shadow: 0 0 12px rgba(255, 20, 147, 0.5);
+  }
+
+  /* ---- Result Box ---- */
+  .result {
+    display: none;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .link-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .link-row input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 14px;
+    outline: none;
+    text-overflow: ellipsis;
+  }
+
+  .copy-btn, .watch-btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: 13px 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+
+  .copy-btn {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .copy-btn:hover {
+    background: var(--text-primary);
+    color: var(--bg-dark);
+    border-color: var(--text-primary);
+  }
+
+  .watch-btn {
+    background: var(--accent-gradient);
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.2);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .watch-btn:hover {
+    box-shadow: 0 6px 18px rgba(255, 20, 147, 0.35);
+    filter: brightness(1.1);
+  }
+
+  /* ---- Error Box ---- */
+  .error-box {
+    display: none;
+    margin-top: 24px;
+    border-left: 3px solid var(--error);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fca5a5;
+    background: var(--error-bg);
+  }
+
+  /* ---- Manage List ---- */
+  .manage-section {
+    margin-top: 8px;
+  }
+
+  .manage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+  }
+
+  .manage-head h2 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .manage-head h2::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--accent-gradient);
+    border-radius: 100px;
+  }
+
+  .manage-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    background: rgba(255, 20, 147, 0.1);
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 20, 147, 0.15);
+  }
+
+  #manageList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .manage-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease-out both;
+  }
+
+  .manage-item:hover {
+    border-color: rgba(255, 20, 147, 0.2);
+    background: var(--card-bg-hover);
+  }
+
+  .manage-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .manage-item-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .manage-item-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .manage-item-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .manage-item-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn-watch-sm {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-watch-sm:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-delete {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #f87171;
+  }
+
+  .manage-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ---- Delete Confirm Modal ---- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: #1a1019;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .modal p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .modal-cancel {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .modal-cancel:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-confirm {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 10px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    transition: var(--transition);
+  }
+
+  .modal-confirm:hover {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+    transform: translateY(-1px);
+  }
+
+  /* ---- Toast ---- */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1019;
+    border: 1px solid rgba(255, 20, 147, 0.3);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 100px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.error {
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+
+  @media (max-width: 640px) {
+    .page-title h1 { font-size: 28px; }
+    .wrap { padding: 32px 16px 60px; }
+    .upload-card { padding: 24px; }
+    .link-row { flex-direction: column; align-items: stretch; }
+    .copy-btn, .watch-btn { width: 100%; text-align: center; justify-content: center; }
+    .manage-item { flex-direction: column; align-items: flex-start; }
+    .manage-item-actions { width: 100%; }
+    .btn-watch-sm, .btn-delete { flex: 1; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <a class="logo" href="/">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      Oyshee <span>Watch</span>
+    </a>
+    <a class="back-btn" href="/" id="backBtn">← Back to Gallery</a>
+  </header>
+
+  <div class="page-title">
+    <h1>Upload &amp; <em>Manage</em></h1>
+    <p>Add new videos to your library or remove ones you no longer need.</p>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="upload-card" id="uploadCard">
+    <div class="section-label">Upload New Video</div>
+
+    <div class="field-group">
+      <label class="field-label" for="titleInput">Video Title</label>
+      <input type="text" class="input-text" id="titleInput" placeholder="Give your video a name" />
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">File Upload</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska,.mkv" />
+        <svg class="upload-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <div class="dz-title" id="dzTitle">Click to choose, or drag a video here</div>
+        <div class="dz-sub">Supports MP4, WebM, OGG, MOV, MKV — up to 10GB</div>
+        <div class="dz-file" id="dzFile" style="display: none;"></div>
+      </div>
+    </div>
+
+    <button class="cast" id="uploadBtn" disabled>Upload &amp; Create Link</button>
+
+    <div class="progress-row" id="progressRow">
+      <div id="progressLabel">
+        <span>Uploading file…</span>
+        <span id="pctLabel">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="result" id="resultBox">
+      <div class="result-label">Your premium watch link</div>
+      <div class="link-row">
+        <input type="text" id="resultLink" readonly />
+        <button class="copy-btn" id="copyBtn">Copy</button>
+        <a class="watch-btn" id="watchBtn" target="_blank">Watch</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Management List -->
+  <div class="manage-section">
+    <div class="manage-head">
+      <h2>Your Videos</h2>
+      <span class="manage-count" id="manageCount">0 videos</span>
+    </div>
+    <div id="manageList"></div>
+  </div>
+
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Delete Video?</h3>
+    <p id="deleteModalText">This will permanently remove the video and its file. This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modalCancel">Cancel</button>
+      <button class="modal-confirm" id="modalConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---- DOM Elements ----
+  const fileInput = document.getElementById("fileInput");
+  const dropzone = document.getElementById("dropzone");
+  const dzTitle = document.getElementById("dzTitle");
+  const dzFile = document.getElementById("dzFile");
+  const titleInput = document.getElementById("titleInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const progressRow = document.getElementById("progressRow");
+  const progressFill = document.getElementById("progressFill");
+  const pctLabel = document.getElementById("pctLabel");
+  const errorBox = document.getElementById("errorBox");
+  const resultBox = document.getElementById("resultBox");
+  const resultLink = document.getElementById("resultLink");
+  const copyBtn = document.getElementById("copyBtn");
+  const watchBtn = document.getElementById("watchBtn");
+  const manageList = document.getElementById("manageList");
+  const manageCount = document.getElementById("manageCount");
+  const deleteModal = document.getElementById("deleteModal");
+  const deleteModalText = document.getElementById("deleteModalText");
+  const modalCancel = document.getElementById("modalCancel");
+  const modalConfirm = document.getElementById("modalConfirm");
+  const toast = document.getElementById("toast");
+
+  let selectedFile = null;
+  let pendingDeleteId = null;
+
+  // ---- Toast ----
+  function showToast(msg, isError = false) {
+    toast.textContent = msg;
+    toast.className = "toast show" + (isError ? " error" : "");
+    setTimeout(() => { toast.className = "toast"; }, 3000);
+  }
+
+  // ---- Dropzone ----
+  dropzone.addEventListener("click", () => fileInput.click());
+  ["dragenter", "dragover"].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add("drag"); })
+  );
+  ["dragleave", "drop"].forEach(evt =>
+    dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove("drag"); })
+  );
+  dropzone.addEventListener("drop", e => {
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFile(e.dataTransfer.files[0]);
+    }
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  });
+
+  function handleFile(file) {
+    selectedFile = file;
+    dzTitle.style.display = "none";
+    dzFile.style.display = "inline-block";
+    dzFile.textContent = `${file.name} (${(file.size / (1024*1024)).toFixed(1)} MB)`;
+    if (!titleInput.value) {
+      titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+    }
+    uploadBtn.disabled = false;
+  }
+
+  // ---- Upload ----
+  uploadBtn.addEventListener("click", () => {
+    if (!selectedFile) return;
+    errorBox.style.display = "none";
+    resultBox.style.display = "none";
+    uploadBtn.disabled = true;
+    progressRow.style.display = "block";
+    progressFill.style.width = "0%";
+    pctLabel.textContent = "0%";
+
+    const formData = new FormData();
+    formData.append("video", selectedFile);
+    formData.append("title", titleInput.value || selectedFile.name);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+
+    xhr.upload.addEventListener("progress", e => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        progressFill.style.width = pct + "%";
+        pctLabel.textContent = pct + "%";
+      }
+    });
+
+    xhr.onload = () => {
+      uploadBtn.disabled = false;
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && data.success) {
+          pctLabel.textContent = "100%";
+          const fullUrl = window.location.origin + data.watchUrl;
+          resultLink.value = fullUrl;
+          resultBox.style.display = "block";
+          watchBtn.href = data.watchUrl;
+          showToast("Video uploaded successfully!");
+          // Reset form for next upload
+          selectedFile = null;
+          titleInput.value = "";
+          dzTitle.style.display = "";
+          dzFile.style.display = "none";
+          fileInput.value = "";
+          uploadBtn.disabled = true;
+          loadManageList();
+        } else {
+          showError(data.error || "Upload failed.");
+        }
+      } catch (err) {
+        showError("Unexpected server response.");
+      }
+    };
+
+    xhr.onerror = () => {
+      uploadBtn.disabled = false;
+      showError("Network error during upload.");
+    };
+
+    xhr.send(formData);
+  });
+
+  copyBtn.addEventListener("click", () => {
+    navigator.clipboard.writeText(resultLink.value).then(() => {
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+    });
+  });
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+    progressRow.style.display = "none";
+  }
+
+  // ---- Helpers ----
+  function formatSize(bytes) {
+    const mb = bytes / (1024 * 1024);
+    if (mb < 1024) return mb.toFixed(1) + " MB";
+    return (mb / 1024).toFixed(2) + " GB";
+  }
+
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return "just now";
+    if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    if (diff < 2592000) return Math.floor(diff / 86400) + "d ago";
+    if (diff < 31536000) return Math.floor(diff / 2592000) + "mo ago";
+    return Math.floor(diff / 31536000) + "y ago";
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---- Manage List ----
+  async function loadManageList() {
+    try {
+      const res = await fetch("/api/videos");
+      const videos = await res.json();
+
+      manageCount.textContent = videos.length ? `${videos.length} video${videos.length > 1 ? "s" : ""}` : "0 videos";
+
+      if (!videos.length) {
+        manageList.innerHTML = '<div class="manage-empty">No videos uploaded yet. Use the form above to add your first video!</div>';
+        return;
+      }
+
+      manageList.innerHTML = videos.map((v, i) => `
+        <div class="manage-item" style="animation-delay: ${i * 0.05}s" id="manage-${v.id}">
+          <div class="manage-item-info">
+            <div class="manage-item-title">${escapeHtml(v.title)}</div>
+            <div class="manage-item-meta">
+              <span>${formatSize(v.size)}</span>
+              <span>${timeAgo(v.uploadedAt)}</span>
+              <span>${v.originalName}</span>
+            </div>
+          </div>
+          <div class="manage-item-actions">
+            <a class="btn-watch-sm" href="/watch/${v.id}" target="_blank">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Watch
+            </a>
+            <button class="btn-delete" onclick="confirmDelete('${v.id}', '${escapeHtml(v.title).replace(/'/g, "\\'")}')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-2 14H7L5 6"></path>
+                <path d="M10 11v6"></path>
+                <path d="M14 11v6"></path>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      `).join("");
+    } catch (e) {
+      manageList.innerHTML = '<div class="manage-empty">Failed to load videos.</div>';
+    }
+  }
+
+  // ---- Delete flow ----
+  function confirmDelete(id, title) {
+    pendingDeleteId = id;
+    deleteModalText.textContent = `"${title}" will be permanently deleted. This action cannot be undone.`;
+    deleteModal.classList.add("active");
+  }
+
+  modalCancel.addEventListener("click", () => {
+    deleteModal.classList.remove("active");
+    pendingDeleteId = null;
+  });
+
+  deleteModal.addEventListener("click", (e) => {
+    if (e.target === deleteModal) {
+      deleteModal.classList.remove("active");
+      pendingDeleteId = null;
+    }
+  });
+
+  modalConfirm.addEventListener("click", async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    deleteModal.classList.remove("active");
+
+    // Animate out the item
+    const item = document.getElementById(`manage-${id}`);
+    if (item) {
+      item.style.opacity = "0";
+      item.style.transform = "translateX(20px)";
+      item.style.transition = "all 0.3s ease";
+    }
+
+    try {
+      const res = await fetch(`/api/videos/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("Video deleted successfully");
+        setTimeout(() => loadManageList(), 300);
+      } else {
+        showToast(data.error || "Failed to delete video", true);
+        if (item) { item.style.opacity = "1"; item.style.transform = ""; }
+      }
+    } catch (e) {
+      showToast("Network error while deleting", true);
+      if (item) { item.style.opacity = "1"; item.style.transform = ""; }
+    }
+    pendingDeleteId = null;
+  });
+
+  // ---- Init ----
+  loadManageList();
+</script>
+</body>
+</html>
